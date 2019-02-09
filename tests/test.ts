@@ -1,4 +1,7 @@
 import { join } from "path";
+import { use } from "chai";
+import chaiAsPromised from "chai-as-promised";
+use(chaiAsPromised);
 import { assert } from "chai";
 
 import {
@@ -10,10 +13,6 @@ import {
 
 // Path to default quiver directory
 const quiverPath = join(__dirname, "./Quiver.qvlibrary");
-
-const throwUnreachable = (msg?: string) => {
-  throw new Error(`This code should not be reached. ${msg ? msg : ""}`);
-};
 
 describe("getNotebooks", () => {
   it("retrieves a list of notebooks given a library location", () => {});
@@ -27,15 +26,8 @@ describe("getDirectories", () => {
     directories.forEach(name => assert.match(name, RegExp(__dirname)));
   });
 
-  it("returns an error if invalid path", async () => {
-    try {
-      await getDirectories("foo");
-    } catch (e) {
-      assert.equal(e.path, "foo");
-      assert.equal(e.code, "ENOENT");
-      return;
-    }
-    throwUnreachable();
+  it("returns an error if invalid path", () => {
+    assert.isRejected(getDirectories("foo"));
   });
 });
 
@@ -54,13 +46,7 @@ describe("getNotebook", () => {
   });
 
   it("returns an error if invalid notebook path", async () => {
-    try {
-      await getNotebook("foo");
-    } catch (error) {
-      process.stdout.write(error);
-      return;
-    }
-    throwUnreachable();
+    assert.isRejected(getNotebook("foo"));
   });
 });
 
