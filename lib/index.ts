@@ -26,3 +26,44 @@ export const getFile = (filePath: string): Promise<string> => {
     });
   });
 };
+
+/**
+ * Notebook
+ *
+ * Represents Quiver notebook
+ */
+export interface Notebook {
+  // Absolute path to notebook
+  readonly notebookPath: string;
+
+  // Noteobok name
+  readonly name: string;
+
+  // UUID
+  readonly uuid: string;
+}
+
+export const getNotebook = (notebookPath: string): Promise<Notebook> => {
+  const filePath = path.resolve(notebookPath, "meta.json");
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await getFile(filePath);
+      const { name, uuid } = JSON.parse(data);
+      return resolve({ notebookPath, name, uuid });
+    } catch (error) {
+      return reject(error);
+    }
+  });
+};
+
+/**
+ * getNotebooks
+ *
+ * Retrieves notebooks from a given library path
+ */
+export const getNotebooks = async (
+  libraryPath: string
+): Promise<Notebook[]> => {
+  const notebookPaths = await getDirectories(libraryPath);
+  return Promise.all(notebookPaths.map(getNotebook));
+};
