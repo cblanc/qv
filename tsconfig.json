@@ -1,0 +1,6 @@
+{
+  "extends": "@cablanchard/tsconfig",
+  "include": [
+    "lib/**/*"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "title": "This is a note in the parent directory",
+  "cells": [
+    {
+      "type": "text",
+      "data": "Note"
+    },
+    {
+      "type": "code",
+      "language": "sh",
+      "data": "this is a code cell\n\n"
+    },
+    {
+      "type": "code",
+      "language": "sh",
+      "data": "This is another cell"
+    },
+    {
+      "type": "markdown",
+      "data": "Markdown"
+    }
+  ]
+}

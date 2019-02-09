@@ -1,0 +1,66 @@
+{
+  "name": "qv",
+  "description": "qv",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cblanc/qv"
+  },
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "npm run lint && NODE_ENV=test node_modules/.bin/nyc node_modules/.bin/mocha --opts mocha.opts",
+    "lint": "node_modules/.bin/tslint -c tslint.json -p tsconfig.json lib/**/*.ts",
+    "build": "npm run lint && node_modules/.bin/tsc",
+    "coverage": "node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls || true",
+    "prepare": "npm run build",
+    "update!": "node_modules/.bin/ncu -u && npm install && npm run test"
+  },
+  "prettier": {
+    "trailingComma": "es5"
+  },
+  "nyc": {
+    "include": [
+      "lib/**/*.ts"
+    ],
+    "exclude": [
+      "dist/*",
+      "**/*.d.ts"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true
+  },
+  "engines": {
+    "node": ">=8.0"
+  },
+  "author": "Christopher Blanchard",
+  "license": "MIT",
+  "devDependencies": {
+    "@cablanchard/tsconfig": "~0.0.1",
+    "@types/chai": "~4.1.7",
+    "@types/mocha": "~5.2.5",
+    "@types/node": "^10.12.21",
+    "chai": "~4.2.0",
+    "coveralls": "~3.0.2",
+    "mocha": "~5.2.0",
+    "npm-check-updates": "~2.15.0",
+    "nyc": "~13.1.0",
+    "prettier": "~1.16.3",
+    "source-map-support": "~0.5.9",
+    "ts-node": "~8.0.1",
+    "tslint": "~5.12.1",
+    "typescript": "~3.3.1"
+  },
+  "dependencies": {
+  }
+}
