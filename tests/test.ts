@@ -9,20 +9,25 @@ import {
   getDirectories,
   getFile,
   getNotebooks,
+  findNotebook,
 } from "../lib/index";
 
 // Path to default quiver directory
-const quiverPath = join(__dirname, "./Quiver.qvlibrary");
+const libraryPath = join(__dirname, "./Quiver.qvlibrary");
+
+const EXPECTED_DIRECTORIES = 3;
 
 describe("getNotebooks", () => {
-  it("retrieves a list of notebooks given a library location", () => {});
+  it("retrieves a list of notebooks given a library location", async () => {
+    const notebooks = await getNotebooks(libraryPath);
+    assert.equal(notebooks.length, EXPECTED_DIRECTORIES);
+  });
 });
 
 describe("getDirectories", () => {
   it("returns a list of directory paths", async () => {
-    const directories = await getDirectories(quiverPath);
-    const expectedDirectories = 3;
-    assert.equal(directories.length, expectedDirectories);
+    const directories = await getDirectories(libraryPath);
+    assert.equal(directories.length, EXPECTED_DIRECTORIES);
     directories.forEach(name => assert.match(name, RegExp(__dirname)));
   });
 
@@ -40,7 +45,7 @@ describe("getFile", () => {
 
 describe("getNotebook", () => {
   it("returns a notebook given a path", async () => {
-    const [notebookPath] = await getDirectories(quiverPath);
+    const [notebookPath] = await getDirectories(libraryPath);
     const notebook = await getNotebook(notebookPath);
     assert.include(notebookPath, notebook.uuid);
   });
@@ -52,7 +57,21 @@ describe("getNotebook", () => {
 
 describe("getNotebooks", () => {
   it("returns a list of all notebooks given a library path", async () => {
-    const notebooks = await getNotebooks(quiverPath);
+    const notebooks = await getNotebooks(libraryPath);
     assert.isTrue(notebooks.length > 0);
+  });
+});
+
+describe("findNotebook", () => {
+  it("returns a notebook that matches a name", async () => {
+    const name = "typescript";
+    const notebook = await findNotebook({ libraryPath, name });
+    if (notebook === null) throw new Error("Notebook should not be null");
+    assert.equal(notebook.name, name);
+  });
+  it("returns null if no matching notebook found", async () => {
+    const name = "foo";
+    const notebook = await findNotebook({ libraryPath, name });
+    assert.isNull(notebook);
   });
 });

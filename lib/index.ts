@@ -43,6 +43,31 @@ export interface Notebook {
   readonly uuid: string;
 }
 
+interface FindOptions {
+  readonly libraryPath: string;
+  readonly name: string;
+}
+/**
+ * findNotebook
+ *
+ * Retrieves a notebook by name otherwise returns null
+ */
+export const findNotebook = (
+  options: FindOptions
+): Promise<Notebook | null> => {
+  return getNotebooks(options.libraryPath).then(notebooks => {
+    return notebooks.reduce<Notebook | null>((prev, notebook) => {
+      if (notebook.name === options.name) return notebook;
+      return prev;
+    }, null);
+  });
+};
+
+/**
+ * getNotebook
+ *
+ * Retrieves notbook data by path
+ */
 export const getNotebook = (notebookPath: string): Promise<Notebook> => {
   const filePath = path.resolve(notebookPath, "meta.json");
   return new Promise(async (resolve, reject) => {
