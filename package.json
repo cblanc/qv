@@ -57,7 +57,7 @@
     "coveralls": "~3.0.2",
     "mocha": "~5.2.0",
     "npm-check-updates": "~2.15.0",
-    "nyc": "~13.2.0",
+    "nyc": "~13.3.0",
     "prettier": "~1.16.3",
     "source-map-support": "~0.5.9",
     "ts-node": "~8.0.1",
