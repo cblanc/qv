@@ -92,3 +92,27 @@ export const getNotebooks = async (
   const notebookPaths = await getDirectories(libraryPath);
   return Promise.all(notebookPaths.map(getNotebook));
 };
+
+interface Note {
+  readonly notebook: Notebook;
+  readonly uuid: string;
+  readonly title: string;
+  readonly updated_at: number;
+  readonly created_at: number;
+  readonly tags: string[];
+  readonly notePath: string;
+}
+
+/**
+ * Retrieves notes for a given notebook
+ */
+export const getNotes = async (notebook: Notebook): Promise<Note[]> => {
+  const { notebookPath } = notebook;
+  const noteDirectories = await getDirectories(notebookPath);
+  const promises = noteDirectories.map(async notePath => {
+    const rawData = await getFile(path.resolve(notePath, "meta.json"));
+    const data = JSON.parse(rawData);
+    return { notebook, notePath, ...data };
+  });
+  return Promise.all(promises);
+};

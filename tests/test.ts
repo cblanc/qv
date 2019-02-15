@@ -9,6 +9,7 @@ import {
   getDirectories,
   getFile,
   getNotebooks,
+  getNotes,
   findNotebook,
 } from "../lib/index";
 
@@ -69,9 +70,24 @@ describe("findNotebook", () => {
     if (notebook === null) throw new Error("Notebook should not be null");
     assert.equal(notebook.name, name);
   });
+
   it("returns null if no matching notebook found", async () => {
     const name = "foo";
     const notebook = await findNotebook({ libraryPath, name });
     assert.isNull(notebook);
+  });
+});
+
+describe("getNotes", () => {
+  it("returns a list of notes given a notebook", async () => {
+    const name = "typescript";
+    const notebook = await findNotebook({ libraryPath, name });
+    if (notebook === null) throw Error("Notebook cannot be null");
+    const [note] = await getNotes(notebook);
+    assert.isNumber(note.created_at);
+    assert.isNumber(note.updated_at);
+    assert.deepEqual(note.tags, []);
+    assert.deepEqual(note.notebook, notebook);
+    assert.equal(note.title, "Notes");
   });
 });
