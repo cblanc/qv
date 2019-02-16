@@ -116,3 +116,54 @@ export const getNotes = async (notebook: Notebook): Promise<Note[]> => {
   });
   return Promise.all(promises);
 };
+
+type CellType = "text" | "markdown" | "code";
+
+interface Cell {
+  readonly type: CellType;
+  readonly data: string;
+}
+
+export interface Content {
+  readonly cells: Cell[];
+  readonly title: string;
+  readonly contentPath: string;
+}
+
+export const getContent = async (note: Note): Promise<Content> => {
+  const contentPath = path.resolve(note.notePath, "content.json");
+  const rawData = await getFile(contentPath);
+  const data = JSON.parse(rawData);
+  return { contentPath, ...data };
+};
+
+export const SEPARATOR = `>>>>>`;
+
+const cellToString = (cell: Cell): string => {
+  const { type, data } = cell;
+  return `${SEPARATOR}${type}
+${data}`;
+};
+
+/**
+ * contentToString
+ *
+ * Converts a content object to string
+ */
+export const contentToString = (content: Content): string => {
+  return content.cells.map(cellToString).join("\n");
+};
+
+/**
+ * parseContent
+ *
+ * Parses raw data into a content object
+ */
+// const parseContent = (data: string): Content => {};
+
+/**
+ * writeContent
+ *
+ * Writes content for a note to disk
+ */
+// const writeContent = (content: Content, note: Note): Promise<content> => {};

@@ -6,6 +6,9 @@ import { assert } from "chai";
 
 import {
   getNotebook,
+  Content,
+  contentToString,
+  getContent,
   getDirectories,
   getFile,
   getNotebooks,
@@ -89,5 +92,51 @@ describe("getNotes", () => {
     assert.deepEqual(note.tags, []);
     assert.deepEqual(note.notebook, notebook);
     assert.equal(note.title, "Notes");
+  });
+});
+
+describe("loadContent", () => {
+  it("Loads note content", async () => {
+    const name = "typescript";
+    const notebook = await findNotebook({ libraryPath, name });
+    if (notebook === null) throw Error("Notebook cannot be null");
+    const [note] = await getNotes(notebook);
+    const content = await getContent(note);
+    assert.equal(content.title, "Notes");
+    assert.isDefined(content.contentPath);
+    const cell = content.cells[0];
+    assert.equal(cell.type, "text");
+  });
+});
+
+describe("contentToString", () => {
+  it("writes content to string", () => {
+    const data = `This is a test
+
+This is a test 2
+
+This is a test 3
+`;
+    const content: Content = {
+      title: "Test",
+      contentPath: "foo",
+      cells: [{ data, type: "text" }, { data, type: "markdown" }],
+    };
+
+    const expected = `>>>>>text
+This is a test
+
+This is a test 2
+
+This is a test 3
+
+>>>>>markdown
+This is a test
+
+This is a test 2
+
+This is a test 3
+`;
+    assert.equal(contentToString(content), expected);
   });
 });
