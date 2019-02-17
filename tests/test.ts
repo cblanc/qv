@@ -8,6 +8,7 @@ import {
   getNotebook,
   Content,
   contentToString,
+  parseContent,
   getContent,
   getDirectories,
   getFile,
@@ -109,21 +110,21 @@ describe("loadContent", () => {
   });
 });
 
-describe("contentToString", () => {
-  it("writes content to string", () => {
-    const data = `This is a test
+describe("Content manipulation", () => {
+  const data = `This is a test
 
 This is a test 2
 
 This is a test 3
 `;
-    const content: Content = {
-      title: "Test",
-      contentPath: "foo",
-      cells: [{ data, type: "text" }, { data, type: "markdown" }],
-    };
 
-    const expected = `>>>>>text
+  const content: Content = {
+    title: "Test",
+    contentPath: "foo",
+    cells: [{ data, type: "text" }, { data, type: "markdown" }],
+  };
+
+  const expected = `>>>>>text
 This is a test
 
 This is a test 2
@@ -137,6 +138,17 @@ This is a test 2
 
 This is a test 3
 `;
-    assert.equal(contentToString(content), expected);
+  describe("contentToString", () => {
+    it("writes content to string", () => {
+      assert.equal(contentToString(content), expected);
+    });
+  });
+  describe("parseContent", () => {
+    const actual = parseContent(expected);
+    process.stdout.write(JSON.stringify(actual));
+
+    process.stdout.write("\n");
+    process.stdout.write(JSON.stringify(content.cells));
+    assert.deepEqual(parseContent(expected), content.cells);
   });
 });

@@ -117,7 +117,7 @@ export const getNotes = async (notebook: Notebook): Promise<Note[]> => {
   return Promise.all(promises);
 };
 
-type CellType = "text" | "markdown" | "code";
+type CellType = "text" | "markdown" | "code" | "latex" | "diagram";
 
 interface Cell {
   readonly type: CellType;
@@ -154,12 +154,51 @@ export const contentToString = (content: Content): string => {
   return content.cells.map(cellToString).join("\n");
 };
 
+const contentRegex = /\n?>>>>>[^\n]*\n/gi;
+
+/**
+ * Extracts type information headers from raw cell data
+ */
+const extractTypes = (cellsData: string): string[] => {
+  return cellsData.match(contentRegex) || [];
+};
+
+/**
+ * Parses a raw type header - returns indication of cell type
+ */
+const parseType = (typeField: string): CellType => {
+  const sanitized = typeField.replace(SEPARATOR, "").trim();
+  if (sanitized.match(/^code/i)) return "code";
+  if (sanitized.match(/^markdown/i)) return "markdown";
+  if (sanitized.match(/^latex/i)) return "latex";
+  if (sanitized.match(/^diagram/i)) return "diagram";
+  return "text";
+};
+
+/**
+ * Extracts content data from raw cell data.
+ *
+ * First result is eliminated, this would be the title
+ */
+const extractData = (cellsData: string): string[] => {
+  const result = cellsData.split(contentRegex);
+  result.shift();
+  return result;
+};
+
 /**
  * parseContent
  *
  * Parses raw data into a content object
  */
-// const parseContent = (data: string): Content => {};
+export const parseContent = (cellsData: string): Cell[] => {
+  const typeFields = extractTypes(cellsData).map(parseType);
+  const dataFields = extractData(cellsData);
+  return typeFields.map((type, i) => {
+    const data = dataFields[i] === undefined ? "" : dataFields[i];
+    return { data, type };
+  });
+};
 
 /**
  * writeContent
