@@ -1,6 +1,6 @@
 import * as path from "path";
 
-import { readdir, readFile } from "fs";
+import { readdir, readFile, writeFile, unlink } from "fs";
 
 // Returns a list of directories at dirPath
 export const getDirectories = (dirPath: string): Promise<string[]> => {
@@ -12,6 +12,28 @@ export const getDirectories = (dirPath: string): Promise<string[]> => {
           .filter(entry => entry.isDirectory())
           .map(entry => path.resolve(dirPath, entry.name))
       );
+    });
+  });
+};
+
+export const newFile = (filePath: string, data: unknown): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const encoding = "utf8";
+    const flag = "w";
+    const options = { encoding, flag };
+    const jsonData = format(data);
+    writeFile(filePath, jsonData, options, error => {
+      if (error) return reject(error);
+      return resolve();
+    });
+  });
+};
+
+export const deleteFile = (filePath: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    unlink(filePath, error => {
+      if (error) return reject(error);
+      return resolve();
     });
   });
 };
@@ -182,7 +204,7 @@ const parseType = (typeField: string): CellType => {
  */
 const extractData = (cellsData: string): string[] => {
   const result = cellsData.split(contentRegex);
-  result.shift();
+  result.shift(); // Drop title
   return result;
 };
 
@@ -198,6 +220,17 @@ export const parseContent = (cellsData: string): Cell[] => {
     const data = dataFields[i] === undefined ? "" : dataFields[i];
     return { data, type };
   });
+};
+
+const JSON_INDENT_LEVEL = 2;
+
+/**
+ * format
+ *
+ * Standard format for object string representation
+ */
+export const format = (obj: unknown): string => {
+  return JSON.stringify(obj, null, JSON_INDENT_LEVEL);
 };
 
 /**

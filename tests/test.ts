@@ -6,6 +6,9 @@ import { assert } from "chai";
 
 import {
   getNotebook,
+  format,
+  deleteFile,
+  newFile,
   Content,
   contentToString,
   parseContent,
@@ -144,11 +147,47 @@ This is a test 3
     });
   });
   describe("parseContent", () => {
-    const actual = parseContent(expected);
-    process.stdout.write(JSON.stringify(actual));
-
-    process.stdout.write("\n");
-    process.stdout.write(JSON.stringify(content.cells));
     assert.deepEqual(parseContent(expected), content.cells);
+  });
+});
+
+describe("newFile", () => {
+  const filePath = join(__dirname, "newFile.txt");
+  after(async () => await deleteFile(filePath));
+
+  it("writes object data to file", async () => {
+    const data = { foo: "bar", baz: ["quux"] };
+    await newFile(filePath, data);
+    const readData = await getFile(filePath);
+    assert.equal(readData, format(data));
+  });
+});
+
+describe("deleteFile", () => {
+  const filePath = join(__dirname, "deleteFile.txt");
+
+  before(async () => await newFile(filePath, {}));
+
+  it("deletes file", async () => {
+    const data = await getFile(filePath);
+    assert.isString(data);
+    await deleteFile(filePath);
+    try {
+      await getFile(filePath);
+    } catch (error) {
+      assert.equal(error.code, "ENOENT");
+      return;
+    }
+    throw new Error("File should be deleted");
+  });
+
+  it("throws error if file doesn't exist", async () => {
+    try {
+      await deleteFile("foo");
+    } catch (error) {
+      assert.equal(error.code, "ENOENT");
+      return;
+    }
+    throw new Error("Deleting a file which doesn't exist should raise");
   });
 });
