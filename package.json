@@ -62,7 +62,7 @@
     "@cablanchard/tsconfig": "~1.0.0",
     "@types/chai": "~4.2.0",
     "@types/chai-as-promised": "~7.1.0",
-    "@types/mocha": "~5.2.5",
+    "@types/mocha": "~7.0.1",
     "@types/node": "~13.5.0",
     "chai": "~4.2.0",
     "chai-as-promised": "~7.1.1",
